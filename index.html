@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MovieFlix</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🎬 MovieFlix</h1>
+
+<!-- SEARCH -->
+<input type="text" id="searchInput" placeholder="Search movie...">
+<button onclick="searchMovies()">Search</button>
+<button onclick="clearSearch()">✖</button>
+
+<!-- CATEGORY -->
+<div class="categories">
+    <button onclick="loadCategory(28)">Action</button>
+    <button onclick="loadCategory(35)">Comedy</button>
+    <button onclick="loadCategory(18)">Drama</button>
+    <button onclick="loadCategory(16)">Cartoon</button>
+</div>
+
+<!-- LANGUAGE -->
+<div class="categories">
+    <button onclick="loadLanguage('en')">English</button>
+    <button onclick="loadLanguage('hi')">Hindi</button>
+    <button onclick="loadLanguage('bn')">Bangla</button>
+</div>
+
+<!-- MOVIES -->
+<div id="movies"></div>
+
+<!-- LOAD MORE -->
+<button onclick="loadMore()">Load More</button>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+
+        <span onclick="closeModal()" class="close">&times;</span>
+
+        <iframe id="trailer" width="100%" height="400"></iframe>
+
+        <button onclick="closeModal()">Exit</button>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
