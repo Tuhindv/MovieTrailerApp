@@ -12,71 +12,76 @@ body {
   background: #0f0f0f;
   color: white;
   text-align: center;
-  padding: 10px;
 }
 
-/* TITLE */
+/* TITLE (YouTube style) */
 h1 {
-  margin: 15px 0;
-  color: #ff3d3d;
-  font-size: 32px;
-}
-
-/* SEARCH */
-input {
-  padding: 10px;
-  width: 300px;
-  max-width: 90%;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-  margin-bottom: 10px;
-}
-
-button {
-  padding: 10px 14px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #ff3d3d;
+  font-size: 28px;
+  text-align: left;
+  padding: 15px 20px;
   color: white;
-  transition: 0.3s;
-  font-size: 14px;
 }
 
+/* SEARCH INPUT (YouTube style) */
+input {
+  width: 40%;
+  max-width: 90%;
+  padding: 12px;
+  margin: 10px;
+  border-radius: 25px;
+  border: 1px solid #333;
+  background: #121212;
+  color: white;
+  outline: none;
+}
+
+/* 🔴 ALL BUTTONS (BIG YOUTUBE STYLE) */
+button {
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 30px;
+  border: none;
+  background: #ff0000;
+  color: white;
+  cursor: pointer;
+  margin: 6px;
+  transition: 0.3s;
+}
+
+/* HOVER EFFECT */
 button:hover {
+  transform: scale(1.08);
   background: #ff1a1a;
 }
 
-/* CATEGORY + LANGUAGE */
+/* CATEGORY BUTTONS (chips style) */
 .categories {
-  margin: 10px 0;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 8px;
+  padding: 10px;
 }
 
 .categories button {
-  background: #333;
+  background: #272727;
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 25px;
 }
 
-.categories button:hover {
-  background: #ff3d3d;
-}
-
-/* MOVIE GRID */
+/* MOVIE GRID (YouTube style) */
 #movies {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 15px;
   padding: 20px;
 }
 
 /* MOVIE CARD */
 .movie {
-  background: #1c1c1c;
+  background: #181818;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -89,23 +94,16 @@ button:hover {
 
 .movie img {
   width: 100%;
-  height: 250px;
+  height: 200px;
   object-fit: cover;
 }
 
 .movie h4 {
-  padding: 10px;
   font-size: 14px;
+  padding: 10px;
 }
 
-/* LOAD MORE BUTTON */
-#loadBtn {
-  margin: 20px;
-  padding: 12px 20px;
-  font-size: 16px;
-}
-
-/* MODAL */
+/* MODAL (TRAILER) */
 .modal {
   display: none;
   position: fixed;
@@ -117,14 +115,20 @@ button:hover {
 }
 
 .modal-content {
-  background: #111;
+  background: #000;
   width: 90%;
-  max-width: 700px;
-  margin: 8% auto;
+  max-width: 800px;
+  margin: 5% auto;
   padding: 10px;
   border-radius: 10px;
 }
 
+iframe {
+  width: 100%;
+  height: 450px;
+}
+
+/* CLOSE BUTTON */
 .close {
   float: right;
   font-size: 24px;
@@ -132,46 +136,38 @@ button:hover {
   color: red;
 }
 
-/* ===================== */
 /* 📱 MOBILE RESPONSIVE */
-/* ===================== */
-
-@media (max-width: 1024px) {
-  #movies {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
   h1 {
-    font-size: 24px;
+    font-size: 22px;
+    text-align: center;
+  }
+
+  input {
+    width: 85%;
   }
 
   #movies {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
   }
 
-  .movie img {
-    height: 200px;
+  iframe {
+    height: 250px;
   }
 
   button {
-    font-size: 12px;
-    padding: 8px 10px;
+    font-size: 14px;
+    padding: 12px 18px;
+  }
+
+  .categories button {
+    font-size: 13px;
+    padding: 10px 14px;
   }
 }
 
 @media (max-width: 480px) {
   #movies {
     grid-template-columns: 1fr;
-  }
-
-  input {
-    width: 90%;
-  }
-
-  .movie img {
-    height: 220px;
   }
 }
