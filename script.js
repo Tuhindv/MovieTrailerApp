@@ -4,28 +4,23 @@ let moviesDiv = document.getElementById("movies");
 let searchInput = document.getElementById("searchInput");
 
 let page = 1;
-let currentMode = "latest";
+let currentMode = "popular";
 let currentQuery = "";
 let currentCategory = "";
 let currentLang = "";
 let isLoading = false;
 
 // =====================
-// DEFAULT MODE RESET
-// =====================
-window.onload = loadMovies;
-
-// =====================
-// LOAD LATEST MOVIES (DEFAULT)
+// LOAD HOME (POPULAR)
 // =====================
 async function loadMovies() {
-  currentMode = "latest";
+  currentMode = "popular";
   page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=1`
+    `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`
   );
 
   const data = await res.json();
@@ -76,7 +71,7 @@ async function getTrailer(movieId) {
 }
 
 // =====================
-// CLICK MOVIE
+// CLICK MOVIE → TRAILER
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -108,7 +103,7 @@ function closeModal() {
 }
 
 // =====================
-// SEARCH MOVIES
+// SEARCH
 // =====================
 async function searchMovies() {
   const q = searchInput.value.trim();
@@ -121,7 +116,7 @@ async function searchMovies() {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=1`
+    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=${page}`
   );
 
   const data = await res.json();
@@ -129,7 +124,7 @@ async function searchMovies() {
 }
 
 // =====================
-// CLEAR SEARCH (RESET)
+// CLEAR SEARCH
 // =====================
 function clearSearch() {
   searchInput.value = "";
@@ -147,7 +142,7 @@ async function loadCategory(id) {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=1`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=${page}`
   );
 
   const data = await res.json();
@@ -165,7 +160,7 @@ async function loadLanguage(lang) {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=1`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=${page}`
   );
 
   const data = await res.json();
@@ -183,8 +178,8 @@ async function loadMore() {
 
   let url = "";
 
-  if (currentMode === "latest") {
-    url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`;
+  if (currentMode === "popular") {
+    url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`;
   } 
   else if (currentMode === "search") {
     url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${currentQuery}&page=${page}`;
@@ -203,3 +198,8 @@ async function loadMore() {
 
   isLoading = false;
 }
+
+// =====================
+// INIT
+// =====================
+loadMovies();
