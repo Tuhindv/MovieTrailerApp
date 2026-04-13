@@ -52,7 +52,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// TRAILER FETCH
+// GET TRAILER + DURATION (UPDATED)
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -61,17 +61,54 @@ async function getTrailer(movieId) {
 
   const data = await res.json();
 
-  const trailer = data.results
-    .filter(v => v.site === "YouTube")
-    .find(v => v.type === "Trailer" || v.type === "Teaser");
+  const trailer = data.results.find(
+    v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
+  );
 
-  return trailer
-    ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1`
-    : null;
+  if (!trailer) return null;
+
+  const videoId = trailer.key;
+
+  return {
+    url: `https://www.youtube.com/embed/${videoId}?autoplay=1`,
+    videoId: videoId
+  };
 }
 
 // =====================
-// CLICK MOVIE → TRAILER
+// YOUTUBE DURATION API
+// =====================
+async function getVideoDuration(videoId) {
+  const res = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=YOUR_YOUTUBE_API_KEY`
+  );
+
+  const data = await res.json();
+
+  if (!data.items.length) return "N/A";
+
+  const iso = data.items[0].contentDetails.duration;
+  return formatDuration(iso);
+}
+
+// =====================
+// FORMAT DURATION
+// =====================
+function formatDuration(iso) {
+  const match = iso.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+
+  const hours = match[1] ? match[1].replace("H", "") : 0;
+  const minutes = match[2] ? match[2].replace("M", "") : 0;
+  const seconds = match[3] ? match[3].replace("S", "") : 0;
+
+  if (hours > 0) {
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  return `${minutes}:${seconds}`;
+}
+
+// =====================
+// CLICK MOVIE → TRAILER + DURATION
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -81,14 +118,19 @@ moviesDiv.addEventListener("click", async (e) => {
 
   const modal = document.getElementById("modal");
   const frame = document.getElementById("trailer");
+  const durationText = document.getElementById("duration");
 
   frame.src = "";
+  durationText.innerText = "Loading...";
 
-  const url = await getTrailer(id);
+  const trailer = await getTrailer(id);
 
-  if (url) {
+  if (trailer) {
     modal.style.display = "block";
-    frame.src = url;
+    frame.src = trailer.url;
+
+    const duration = await getVideoDuration(trailer.videoId);
+    durationText.innerText = `⏱ Duration: ${duration}`;
   } else {
     alert("Trailer নাই 😢");
   }
@@ -100,6 +142,7 @@ moviesDiv.addEventListener("click", async (e) => {
 function closeModal() {
   document.getElementById("modal").style.display = "none";
   document.getElementById("trailer").src = "";
+  document.getElementById("duration").innerText = "";
 }
 
 // =====================
@@ -132,7 +175,7 @@ function clearSearch() {
 }
 
 // =====================
-// CATEGORY (FIXED → NEW DATA EVERY CLICK)
+// CATEGORY
 // =====================
 async function loadCategory(id) {
   currentMode = "category";
@@ -151,7 +194,7 @@ async function loadCategory(id) {
 }
 
 // =====================
-// LANGUAGE (FIXED)
+// LANGUAGE
 // =====================
 async function loadLanguage(lang) {
   currentMode = "language";
@@ -170,7 +213,7 @@ async function loadLanguage(lang) {
 }
 
 // =====================
-// LOAD MORE (FIXED)
+// LOAD MORE
 // =====================
 async function loadMore() {
   if (isLoading) return;
