@@ -80,7 +80,7 @@ async function getTrailer(movieId) {
 }
 
 // =====================
-// GET MOVIE DURATION (TMDB - FIXED)
+// GET MOVIE DURATION (TMDB - FIXED & MOBILE SAFE)
 // =====================
 async function getMovieRuntime(movieId) {
   try {
@@ -96,8 +96,8 @@ async function getMovieRuntime(movieId) {
     const minutes = data.runtime % 60;
 
     return hours > 0
-      ? `${hours}:${String(minutes).padStart(2, "0")}`
-      : `${minutes} min`;
+      ? `${hours}h ${minutes}m`
+      : `${minutes}m`;
 
   } catch (err) {
     return "N/A";
@@ -118,7 +118,7 @@ moviesDiv.addEventListener("click", async (e) => {
   const durationText = document.getElementById("duration");
 
   frame.src = "";
-  durationText.innerText = "Loading...";
+  durationText.innerText = "⏳ Loading...";
 
   const trailer = await getTrailer(id);
 
@@ -177,6 +177,7 @@ function clearSearch() {
 async function loadCategory(id) {
   currentMode = "category";
   currentCategory = id;
+
   page = Math.floor(Math.random() * 10) + 1;
 
   moviesDiv.innerHTML = "Loading...";
@@ -195,6 +196,7 @@ async function loadCategory(id) {
 async function loadLanguage(lang) {
   currentMode = "language";
   currentLang = lang;
+
   page = Math.floor(Math.random() * 10) + 1;
 
   moviesDiv.innerHTML = "Loading...";
