@@ -4,23 +4,23 @@ let moviesDiv = document.getElementById("movies");
 let searchInput = document.getElementById("searchInput");
 
 let page = 1;
-let currentMode = "popular";
+let currentMode = "latest";
 let currentQuery = "";
 let currentCategory = "";
 let currentLang = "";
 let isLoading = false;
 
 // =====================
-// LOAD HOME
+// LOAD LATEST MOVIES
 // =====================
 async function loadMovies() {
-  currentMode = "popular";
-  page = Math.floor(Math.random() * 10) + 1;
+  currentMode = "latest";
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`
+    `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`
   );
 
   const data = await res.json();
@@ -52,7 +52,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// TRAILER FETCH
+// GET TRAILER
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -132,13 +132,12 @@ function clearSearch() {
 }
 
 // =====================
-// CATEGORY (FIXED → NEW DATA EVERY CLICK)
+// CATEGORY
 // =====================
 async function loadCategory(id) {
   currentMode = "category";
   currentCategory = id;
-
-  page = Math.floor(Math.random() * 10) + 1;
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -151,13 +150,12 @@ async function loadCategory(id) {
 }
 
 // =====================
-// LANGUAGE (FIXED)
+// LANGUAGE
 // =====================
 async function loadLanguage(lang) {
   currentMode = "language";
   currentLang = lang;
-
-  page = Math.floor(Math.random() * 10) + 1;
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -170,7 +168,7 @@ async function loadLanguage(lang) {
 }
 
 // =====================
-// LOAD MORE (FIXED)
+// LOAD MORE (ALL PAGES SUPPORT)
 // =====================
 async function loadMore() {
   if (isLoading) return;
@@ -180,8 +178,8 @@ async function loadMore() {
 
   let url = "";
 
-  if (currentMode === "popular") {
-    url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`;
+  if (currentMode === "latest") {
+    url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`;
   } 
   else if (currentMode === "search") {
     url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${currentQuery}&page=${page}`;
