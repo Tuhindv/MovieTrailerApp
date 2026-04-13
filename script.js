@@ -1,30 +1,44 @@
 const API_KEY = "c4c35b01a48a95fbc64048cbfcac1793";
 
-let moviesDiv = document.getElementById("movies");
-let searchInput = document.getElementById("searchInput");
+// DOM
+const moviesDiv = document.getElementById("movies");
+const searchInput = document.getElementById("searchInput");
 
+// STATE
 let page = 1;
-let currentMode = "popular";
+let currentMode = "latest";
 let currentQuery = "";
 let currentCategory = "";
 let currentLang = "";
 let isLoading = false;
 
 // =====================
-// LOAD HOME (POPULAR)
+// INIT (REFRESH FIX)
+// =====================
+window.onload = () => {
+  loadMovies();
+};
+
+// =====================
+// LOAD LATEST MOVIES (HOME)
 // =====================
 async function loadMovies() {
-  currentMode = "popular";
+  currentMode = "latest";
   page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
-  const res = await fetch(
-    `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`
-  );
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=1`
+    );
 
-  const data = await res.json();
-  showMovies(data.results);
+    const data = await res.json();
+    showMovies(data.results);
+  } catch (error) {
+    moviesDiv.innerHTML = "Failed to load movies";
+    console.error(error);
+  }
 }
 
 // =====================
@@ -43,7 +57,7 @@ function showMovies(movies, append = false) {
     div.dataset.id = movie.id;
 
     div.innerHTML = `
-      <img src="${poster}">
+      <img src="${poster}" alt="movie">
       <h4>${movie.title || movie.name}</h4>
     `;
 
@@ -52,7 +66,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// TRAILER FETCH
+// TRAILER
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -62,8 +76,7 @@ async function getTrailer(movieId) {
   const data = await res.json();
 
   const trailer = data.results
-    .filter(v => v.site === "YouTube")
-    .find(v => v.type === "Trailer" || v.type === "Teaser");
+    .find(v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser"));
 
   return trailer
     ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1`
@@ -71,7 +84,7 @@ async function getTrailer(movieId) {
 }
 
 // =====================
-// CLICK MOVIE → TRAILER
+// CLICK MOVIE
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -116,7 +129,7 @@ async function searchMovies() {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=${page}`
+    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=1`
   );
 
   const data = await res.json();
@@ -142,7 +155,7 @@ async function loadCategory(id) {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=${page}`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=1`
   );
 
   const data = await res.json();
@@ -160,7 +173,7 @@ async function loadLanguage(lang) {
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=${page}`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=1`
   );
 
   const data = await res.json();
@@ -178,8 +191,8 @@ async function loadMore() {
 
   let url = "";
 
-  if (currentMode === "popular") {
-    url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`;
+  if (currentMode === "latest") {
+    url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`;
   } 
   else if (currentMode === "search") {
     url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${currentQuery}&page=${page}`;
@@ -191,15 +204,14 @@ async function loadMore() {
     url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${currentLang}&page=${page}`;
   }
 
-  const res = await fetch(url);
-  const data = await res.json();
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
 
-  showMovies(data.results, true);
+    showMovies(data.results, true);
+  } catch (error) {
+    console.error(error);
+  }
 
   isLoading = false;
 }
-
-// =====================
-// INIT
-// =====================
-loadMovies();
