@@ -52,63 +52,73 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// GET TRAILER + DURATION (UPDATED)
+// GET TRAILER
 // =====================
 async function getTrailer(movieId) {
-  const res = await fetch(
-    `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`
-  );
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  const trailer = data.results.find(
-    v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
-  );
+    const trailer = data.results.find(
+      v => v.site === "YouTube" &&
+      (v.type === "Trailer" || v.type === "Teaser")
+    );
 
-  if (!trailer) return null;
+    if (!trailer) return null;
 
-  const videoId = trailer.key;
+    return {
+      url: `https://www.youtube.com/embed/${trailer.key}?autoplay=1`,
+      videoId: trailer.key
+    };
 
-  return {
-    url: `https://www.youtube.com/embed/${videoId}?autoplay=1`,
-    videoId: videoId
-  };
+  } catch (err) {
+    return null;
+  }
 }
 
 // =====================
-// YOUTUBE DURATION API
+// YOUTUBE DURATION
 // =====================
 async function getVideoDuration(videoId) {
-  const res = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=YOUR_YOUTUBE_API_KEY`
-  );
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=YOUR_YOUTUBE_API_KEY`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!data.items.length) return "N/A";
+    if (!data.items || !data.items.length) return "N/A";
 
-  const iso = data.items[0].contentDetails.duration;
-  return formatDuration(iso);
+    const iso = data.items[0].contentDetails.duration;
+    return formatDuration(iso);
+
+  } catch (err) {
+    return "N/A";
+  }
 }
 
 // =====================
-// FORMAT DURATION
+// FORMAT DURATION (FIXED)
 // =====================
 function formatDuration(iso) {
-  const match = iso.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
 
-  const hours = match[1] ? match[1].replace("H", "") : 0;
-  const minutes = match[2] ? match[2].replace("M", "") : 0;
-  const seconds = match[3] ? match[3].replace("S", "") : 0;
+  const hours = parseInt(match?.[1] || 0);
+  const minutes = parseInt(match?.[2] || 0);
+  const seconds = parseInt(match?.[3] || 0);
 
   if (hours > 0) {
-    return `${hours}:${minutes}:${seconds}`;
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
-  return `${minutes}:${seconds}`;
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 // =====================
-// CLICK MOVIE → TRAILER + DURATION
+// CLICK MOVIE
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -121,7 +131,7 @@ moviesDiv.addEventListener("click", async (e) => {
   const durationText = document.getElementById("duration");
 
   frame.src = "";
-  durationText.innerText = "Loading...";
+  durationText.innerText = "Loading duration...";
 
   const trailer = await getTrailer(id);
 
@@ -180,7 +190,6 @@ function clearSearch() {
 async function loadCategory(id) {
   currentMode = "category";
   currentCategory = id;
-
   page = Math.floor(Math.random() * 10) + 1;
 
   moviesDiv.innerHTML = "Loading...";
@@ -199,7 +208,6 @@ async function loadCategory(id) {
 async function loadLanguage(lang) {
   currentMode = "language";
   currentLang = lang;
-
   page = Math.floor(Math.random() * 10) + 1;
 
   moviesDiv.innerHTML = "Loading...";
