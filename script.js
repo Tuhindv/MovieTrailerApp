@@ -11,11 +11,6 @@ let currentLang = "";
 let isLoading = false;
 
 // =====================
-// MOBILE CHECK
-// =====================
-const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
-
-// =====================
 // LOAD HOME
 // =====================
 async function loadMovies() {
@@ -57,7 +52,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// GET TRAILER
+// GET TRAILER + DURATION (UPDATED)
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -72,15 +67,16 @@ async function getTrailer(movieId) {
 
   if (!trailer) return null;
 
+  const videoId = trailer.key;
+
   return {
-    url: `https://www.youtube.com/embed/${trailer.key}?autoplay=1`,
-    videoId: trailer.key
+    url: `https://www.youtube.com/embed/${videoId}?autoplay=1`,
+    videoId: videoId
   };
 }
 
 // =====================
 // YOUTUBE DURATION API
-// (ONLY DESKTOP USE)
 // =====================
 async function getVideoDuration(videoId) {
   const res = await fetch(
@@ -89,7 +85,7 @@ async function getVideoDuration(videoId) {
 
   const data = await res.json();
 
-  if (!data.items || !data.items.length) return "N/A";
+  if (!data.items.length) return "N/A";
 
   const iso = data.items[0].contentDetails.duration;
   return formatDuration(iso);
@@ -112,7 +108,7 @@ function formatDuration(iso) {
 }
 
 // =====================
-// CLICK MOVIE → TRAILER
+// CLICK MOVIE → TRAILER + DURATION
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -125,7 +121,7 @@ moviesDiv.addEventListener("click", async (e) => {
   const durationText = document.getElementById("duration");
 
   frame.src = "";
-  durationText.innerText = "";
+  durationText.innerText = "Loading...";
 
   const trailer = await getTrailer(id);
 
@@ -133,16 +129,8 @@ moviesDiv.addEventListener("click", async (e) => {
     modal.style.display = "block";
     frame.src = trailer.url;
 
-    // =====================
-    // MOBILE: hide duration
-    // =====================
-    if (isMobile) {
-      durationText.style.display = "none";
-    } else {
-      durationText.style.display = "block";
-      const duration = await getVideoDuration(trailer.videoId);
-      durationText.innerText = `⏱ Duration: ${duration}`;
-    }
+    const duration = await getVideoDuration(trailer.videoId);
+    durationText.innerText = `⏱ Duration: ${duration}`;
   } else {
     alert("Trailer নাই 😢");
   }
