@@ -3,7 +3,7 @@
 <head>
     <title>MovieFlix</title>
 
-    <!-- 📱 IMPORTANT FIX FOR MOBILE -->
+    <!-- 📱 MOBILE FIX -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="style.css">
@@ -13,9 +13,11 @@
 <h1>🎬 MovieFlix</h1>
 
 <!-- SEARCH -->
-<input type="text" id="searchInput" placeholder="Search movie...">
-<button onclick="searchMovies()">Search</button>
-<button onclick="clearSearch()">✖</button>
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="Search movie...">
+  <button onclick="searchMovies()">Search</button>
+  <button onclick="clearSearch()">✖</button>
+</div>
 
 <!-- CATEGORY -->
 <div class="categories">
@@ -36,18 +38,16 @@
 <div id="movies"></div>
 
 <!-- LOAD MORE -->
-<button onclick="loadMore()">Load More</button>
+<div style="text-align:center;">
+  <button onclick="loadMore()">Load More</button>
+</div>
 
 <!-- MODAL -->
 <div id="modal" class="modal">
     <div class="modal-content">
-
         <span onclick="closeModal()" class="close">&times;</span>
-
         <iframe id="trailer"></iframe>
-
         <button onclick="closeModal()">Exit</button>
-
     </div>
 </div>
 
