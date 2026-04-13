@@ -1,4 +1,4 @@
-const API_KEY = "c4c35b01a48a95fbc64048cbfcac1793";
+const API_KEY = "YOUR_API_KEY_HERE";
 
 let moviesDiv = document.getElementById("movies");
 let searchInput = document.getElementById("searchInput");
@@ -11,16 +11,23 @@ let currentLang = "";
 let isLoading = false;
 
 // =====================
+// SET MODE (IMPORTANT FIX)
+// =====================
+function setMode(mode) {
+  currentMode = mode;
+  page = 1;
+}
+
+// =====================
 // LOAD LATEST MOVIES
 // =====================
 async function loadMovies() {
-  currentMode = "latest";
-  page = 1;
+  setMode("latest");
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`
+    `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=1`
   );
 
   const data = await res.json();
@@ -52,7 +59,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// GET TRAILER
+// TRAILER
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -71,7 +78,7 @@ async function getTrailer(movieId) {
 }
 
 // =====================
-// CLICK MOVIE → TRAILER
+// CLICK MOVIE
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -109,14 +116,13 @@ async function searchMovies() {
   const q = searchInput.value.trim();
   if (!q) return;
 
-  currentMode = "search";
+  setMode("search");
   currentQuery = q;
-  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=${page}`
+    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${q}&page=1`
   );
 
   const data = await res.json();
@@ -135,14 +141,13 @@ function clearSearch() {
 // CATEGORY
 // =====================
 async function loadCategory(id) {
-  currentMode = "category";
+  setMode("category");
   currentCategory = id;
-  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=${page}`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}&page=1`
   );
 
   const data = await res.json();
@@ -153,14 +158,13 @@ async function loadCategory(id) {
 // LANGUAGE
 // =====================
 async function loadLanguage(lang) {
-  currentMode = "language";
+  setMode("language");
   currentLang = lang;
-  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=${page}`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_original_language=${lang}&page=1`
   );
 
   const data = await res.json();
@@ -168,7 +172,7 @@ async function loadLanguage(lang) {
 }
 
 // =====================
-// LOAD MORE (ALL PAGES SUPPORT)
+// LOAD MORE (FIXED)
 // =====================
 async function loadMore() {
   if (isLoading) return;
