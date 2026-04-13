@@ -1,4 +1,4 @@
-const API_KEY = "c4c35b01a48a95fbc64048cbfcac1793";
+const API_KEY = "YOUR_API_KEY_HERE";
 
 let moviesDiv = document.getElementById("movies");
 let searchInput = document.getElementById("searchInput");
@@ -11,18 +11,16 @@ let currentLang = "";
 let isLoading = false;
 
 // =====================
-// SET MODE (IMPORTANT FIX)
+// DEFAULT MODE RESET
 // =====================
-function setMode(mode) {
-  currentMode = mode;
-  page = 1;
-}
+window.onload = loadMovies;
 
 // =====================
-// LOAD LATEST MOVIES
+// LOAD LATEST MOVIES (DEFAULT)
 // =====================
 async function loadMovies() {
-  setMode("latest");
+  currentMode = "latest";
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -59,7 +57,7 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// TRAILER
+// TRAILER FETCH
 // =====================
 async function getTrailer(movieId) {
   const res = await fetch(
@@ -110,14 +108,15 @@ function closeModal() {
 }
 
 // =====================
-// SEARCH
+// SEARCH MOVIES
 // =====================
 async function searchMovies() {
   const q = searchInput.value.trim();
   if (!q) return;
 
-  setMode("search");
+  currentMode = "search";
   currentQuery = q;
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -130,7 +129,7 @@ async function searchMovies() {
 }
 
 // =====================
-// CLEAR SEARCH
+// CLEAR SEARCH (RESET)
 // =====================
 function clearSearch() {
   searchInput.value = "";
@@ -141,8 +140,9 @@ function clearSearch() {
 // CATEGORY
 // =====================
 async function loadCategory(id) {
-  setMode("category");
+  currentMode = "category";
   currentCategory = id;
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -158,8 +158,9 @@ async function loadCategory(id) {
 // LANGUAGE
 // =====================
 async function loadLanguage(lang) {
-  setMode("language");
+  currentMode = "language";
   currentLang = lang;
+  page = 1;
 
   moviesDiv.innerHTML = "Loading...";
 
@@ -172,7 +173,7 @@ async function loadLanguage(lang) {
 }
 
 // =====================
-// LOAD MORE (FIXED)
+// LOAD MORE
 // =====================
 async function loadMore() {
   if (isLoading) return;
@@ -202,8 +203,3 @@ async function loadMore() {
 
   isLoading = false;
 }
-
-// =====================
-// INIT
-// =====================
-loadMovies();
