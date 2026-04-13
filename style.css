@@ -1,3 +1,4 @@
+
 /* RESET */
 * {
   margin: 0;
@@ -18,19 +19,20 @@ body {
 h1 {
   text-align: center;
   padding: 15px;
-  font-size: 28px;
 }
 
 /* SEARCH */
 .search-box {
+  width: 100%;
   text-align: center;
 }
 
 input {
-  width: 90%;
+  width: 100%;
   max-width: 400px;
   padding: 12px;
-  margin: 10px;
+  margin: 10px auto;
+  display: block;
   border-radius: 25px;
   border: 1px solid #333;
   background: #121212;
@@ -39,6 +41,7 @@ input {
 
 /* BUTTON */
 button {
+  width: auto;
   padding: 12px 18px;
   font-size: 15px;
   border-radius: 25px;
@@ -47,109 +50,76 @@ button {
   color: white;
   cursor: pointer;
   margin: 5px;
-  transition: 0.3s;
-}
-
-button:hover {
-  transform: scale(1.05);
 }
 
 /* CATEGORY */
 .categories {
+  width: 100%;
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   padding: 10px;
 }
 
-.categories button {
-  background: #272727;
-  font-size: 14px;
-}
-
-/* 🎬 MOVIE GRID */
+/* 🎬 MOVIES GRID */
 #movies {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  padding: 15px;
+  gap: 12px;
+  padding: 12px;
 }
 
 /* MOVIE CARD */
 .movie {
+  width: 100%;
   background: #181818;
   border-radius: 10px;
   overflow: hidden;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.movie:hover {
-  transform: scale(1.05);
 }
 
 .movie img {
   width: 100%;
-  height: 220px;
+  height: auto; /* 🔥 IMPORTANT */
+  max-height: 220px;
   object-fit: cover;
 }
 
 .movie h4 {
+  padding: 8px;
   font-size: 14px;
-  padding: 10px;
 }
 
 /* MODAL */
 .modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
+  position: fixed;
   background: rgba(0,0,0,0.85);
+  top: 0;
+  left: 0;
+  display: none;
 }
 
 .modal-content {
-  background: #000;
   width: 95%;
   max-width: 800px;
   margin: 5% auto;
+  background: #000;
   padding: 10px;
   border-radius: 10px;
 }
 
 iframe {
   width: 100%;
-  height: 450px;
-  max-width: 100%;
+  height: 300px;
 }
 
-/* CLOSE */
-.close {
-  float: right;
-  font-size: 24px;
-  color: red;
-  cursor: pointer;
-}
-
-/* ===================== */
 /* 📱 MOBILE FIX */
-/* ===================== */
-
 @media (max-width: 768px) {
   #movies {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px;
-  }
-
-  iframe {
-    height: 250px;
-  }
-
-  button {
-    font-size: 14px;
   }
 }
 
