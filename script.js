@@ -52,56 +52,59 @@ function showMovies(movies, append = false) {
 }
 
 // =====================
-// GET TRAILER
+// GET TRAILER + DURATION (UPDATED)
 // =====================
 async function getTrailer(movieId) {
-  try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`
-    );
+  const res = await fetch(
+    `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`
+  );
 
-    const data = await res.json();
+  const data = await res.json();
 
-    const trailer = data.results.find(
-      v => v.site === "YouTube" &&
-      (v.type === "Trailer" || v.type === "Teaser")
-    );
+  const trailer = data.results.find(
+    v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
+  );
 
-    if (!trailer) return null;
+  if (!trailer) return null;
 
-    return {
-      url: `https://www.youtube.com/embed/${trailer.key}?autoplay=1`,
-      videoId: trailer.key
-    };
+  const videoId = trailer.key;
 
-  } catch (err) {
-    return null;
-  }
+  return {
+    url: `https://www.youtube.com/embed/${videoId}?autoplay=1`,
+    videoId: videoId
+  };
 }
 
 // =====================
-// GET MOVIE DURATION (TMDB - FIXED & MOBILE SAFE)
+// YOUTUBE DURATION API
 // =====================
-async function getMovieRuntime(movieId) {
-  try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`
-    );
+async function getVideoDuration(videoId) {
+  const res = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=YOUR_YOUTUBE_API_KEY`
+  );
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!data.runtime) return "N/A";
+  if (!data.items.length) return "N/A";
 
-    const hours = Math.floor(data.runtime / 60);
-    const minutes = data.runtime % 60;
+  const iso = data.items[0].contentDetails.duration;
+  return formatDuration(iso);
+}
 
-    return hours > 0
-      ? `${hours}h ${minutes}m`
-      : `${minutes}m`;
+// =====================
+// FORMAT DURATION
+// =====================
+function formatDuration(iso) {
+  const match = iso.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
 
-  } catch (err) {
-    return "N/A";
+  const hours = match[1] ? match[1].replace("H", "") : 0;
+  const minutes = match[2] ? match[2].replace("M", "") : 0;
+  const seconds = match[3] ? match[3].replace("S", "") : 0;
+
+  if (hours > 0) {
+    return `${hours}:${minutes}:${seconds}`;
   }
+  return `${minutes}:${seconds}`;
 }
 
 // =====================
@@ -118,7 +121,7 @@ moviesDiv.addEventListener("click", async (e) => {
   const durationText = document.getElementById("duration");
 
   frame.src = "";
-  durationText.innerText = "⏳ Loading...";
+  durationText.innerText = "Loading...";
 
   const trailer = await getTrailer(id);
 
@@ -126,7 +129,7 @@ moviesDiv.addEventListener("click", async (e) => {
     modal.style.display = "block";
     frame.src = trailer.url;
 
-    const duration = await getMovieRuntime(id);
+    const duration = await getVideoDuration(trailer.videoId);
     durationText.innerText = `⏱ Duration: ${duration}`;
   } else {
     alert("Trailer নাই 😢");
