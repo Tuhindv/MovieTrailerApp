@@ -80,20 +80,24 @@ async function getTrailer(movieId) {
 }
 
 // =====================
-// YOUTUBE DURATION
+// GET MOVIE DURATION (TMDB - FIXED)
 // =====================
-async function getVideoDuration(videoId) {
+async function getMovieRuntime(movieId) {
   try {
     const res = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=YOUR_YOUTUBE_API_KEY`
+      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`
     );
 
     const data = await res.json();
 
-    if (!data.items || !data.items.length) return "N/A";
+    if (!data.runtime) return "N/A";
 
-    const iso = data.items[0].contentDetails.duration;
-    return formatDuration(iso);
+    const hours = Math.floor(data.runtime / 60);
+    const minutes = data.runtime % 60;
+
+    return hours > 0
+      ? `${hours}:${String(minutes).padStart(2, "0")}`
+      : `${minutes} min`;
 
   } catch (err) {
     return "N/A";
@@ -101,24 +105,7 @@ async function getVideoDuration(videoId) {
 }
 
 // =====================
-// FORMAT DURATION (FIXED)
-// =====================
-function formatDuration(iso) {
-  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-
-  const hours = parseInt(match?.[1] || 0);
-  const minutes = parseInt(match?.[2] || 0);
-  const seconds = parseInt(match?.[3] || 0);
-
-  if (hours > 0) {
-    return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  }
-
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
-// =====================
-// CLICK MOVIE
+// CLICK MOVIE → TRAILER + DURATION
 // =====================
 moviesDiv.addEventListener("click", async (e) => {
   const movieCard = e.target.closest(".movie");
@@ -131,7 +118,7 @@ moviesDiv.addEventListener("click", async (e) => {
   const durationText = document.getElementById("duration");
 
   frame.src = "";
-  durationText.innerText = "Loading duration...";
+  durationText.innerText = "Loading...";
 
   const trailer = await getTrailer(id);
 
@@ -139,7 +126,7 @@ moviesDiv.addEventListener("click", async (e) => {
     modal.style.display = "block";
     frame.src = trailer.url;
 
-    const duration = await getVideoDuration(trailer.videoId);
+    const duration = await getMovieRuntime(id);
     durationText.innerText = `⏱ Duration: ${duration}`;
   } else {
     alert("Trailer নাই 😢");
